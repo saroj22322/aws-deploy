@@ -14,10 +14,10 @@ phases:
     commands:
       - echo Build started on `date`
       - echo Building the Docker image 1...
-      - docker build -t $REPOSITORY_URI_1:latest app1/Dockerfile
+      - docker build -t $REPOSITORY_URI_1:latest app1
       - docker tag $REPOSITORY_URI_1:latest $REPOSITORY_URI_1:$IMAGE_TAG
       - echo Building the Docker image 2...
-      - docker build -t $REPOSITORY_URI_2:latest app2/Dockerfile
+      - docker build -t $REPOSITORY_URI_2:latest app2
       - docker tag $REPOSITORY_URI_2:latest $REPOSITORY_URI_2:$IMAGE_TAG
   post_build:
     commands:
