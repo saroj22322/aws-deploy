@@ -1,4 +1,8 @@
-FROM 012345678910.dkr.ecr.us-east-1.amazonaws.com/base-image
+FROM alpine:3.8
+
+RUN apk update
+
+RUN apk add nodejs
 
 ENV PORT=80
 
