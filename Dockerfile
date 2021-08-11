@@ -1,13 +1,19 @@
-FROM alpine:3.8
+FROM ubuntu:16.04
 
-RUN apk update
+# Install dependencies
+RUN apt-get update
+RUN apt-get -y install apache2
 
-RUN apk add nodejs
+# Install apache and write hello world message
+RUN echo 'Hello World!' > /var/www/html/index.html
 
-ENV PORT=80
+# Configure apache
+RUN echo '. /etc/apache2/envvars' > /root/run_apache.sh
+RUN echo 'mkdir -p /var/run/apache2' >> /root/run_apache.sh
+RUN echo 'mkdir -p /var/lock/apache2' >> /root/run_apache.sh
+RUN echo '/usr/sbin/apache2 -D FOREGROUND' >> /root/run_apache.sh
+RUN chmod 755 /root/run_apache.sh
 
-EXPOSE $PORT
+EXPOSE 80
 
-COPY app.js /app/
-
-CMD ["node", "/app/app.js"]
+CMD /root/run_apache.sh
