@@ -6,23 +6,29 @@ phases:
       - echo Logging in to Amazon ECR...
       - aws --version
       - aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin 532100236271.dkr.ecr.ap-south-1.amazonaws.com
-      - REPOSITORY_URI=532100236271.dkr.ecr.ap-south-1.amazonaws.com/test-image
+      - REPOSITORY_URI_1=532100236271.dkr.ecr.ap-south-1.amazonaws.com/test-image
+      - REPOSITORY_URI_2=532100236271.dkr.ecr.ap-south-1.amazonaws.com/test-image-2
       - COMMIT_HASH=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
       - IMAGE_TAG=${COMMIT_HASH:=latest}
   build:
     commands:
       - echo Build started on `date`
-      - echo Building the Docker image...
-      - docker build -t $REPOSITORY_URI:latest .
-      - docker tag $REPOSITORY_URI:latest $REPOSITORY_URI:$IMAGE_TAG
+      - echo Building the Docker image 1...
+      - docker build -t $REPOSITORY_URI_1:latest app1/Dockerfile
+      - docker tag $REPOSITORY_URI_1:latest $REPOSITORY_URI_1:$IMAGE_TAG
+      - echo Building the Docker image 2...
+      - docker build -t $REPOSITORY_URI_2:latest app2/Dockerfile
+      - docker tag $REPOSITORY_URI_2:latest $REPOSITORY_URI_2:$IMAGE_TAG
   post_build:
     commands:
       - echo Build completed on `date`
       - echo Pushing the Docker images...
-      - docker push $REPOSITORY_URI:latest
-      - docker push $REPOSITORY_URI:$IMAGE_TAG
+      - docker push $REPOSITORY_URI_1:latest
+      - docker push $REPOSITORY_URI_1:$IMAGE_TAG
+      - docker push $REPOSITORY_URI_2:latest
+      - docker push $REPOSITORY_URI_2:$IMAGE_TAG
       - echo Writing image definitions file...
-      - printf '[{"name":"container1","imageUri":"%s"}]' $REPOSITORY_URI:$IMAGE_TAG > imagedefinitions.json
+      - printf '[{"name":"container1","imageUri":"%s"},{"name":"container2","imageUri":"%s"}]' $REPOSITORY_URI:$IMAGE_TAG $REPOSITORY_URI:$IMAGE_TAG > imagedefinitions.json
 artifacts:
     files: imagedefinitions.json
 
